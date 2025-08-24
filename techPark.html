@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeckPark - Smart Parking Solutions</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="techPark.css" type="text/css" />
+
+    <!-- Leaflet CSS for OpenStreetMap -->
+     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">🚗 TeckPark</div>
+                    <nav>
+                        <ul>
+                            <li><a href="#map-section">Find Parking</a></li>
+                            <li><a href="#booking-section">Book Spot</a></li>
+                            <li><a href="#payment-section">Payment</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="hero">
+                <h1>Smart Parking Made Simple</h1>
+                <p>Find, book, and pay for parking spots near you with ease</p>
+                <a href="#map-section" class="cta-button">Find Parking Now</a>
+            </div>
+
+            <!-- Google Maps Section -->
+            <div class="section" id="map-section">
+                <div class="section-header">
+                    <h2>🗺️ Find Nearby Parking</h2>
+                    <p>Discover available parking spots around your location</p>
+                </div>
+                <div class="section-content">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="locationSearch" placeholder="Search for parking near you (e.g., City Centre Mall, Hampankatta)">
+                    </div>
+                    <div id="map"></div>
+                    <div class="parking-grid" id="parkingGrid">
+                        <!-- Parking spots will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicle Type Selection -->
+            <div class="section" id="vehicle-section">
+                <div class="section-header">
+                    <h2>🚗 Select Your Vehicle Type</h2>
+                    <p>Choose between two-wheeler and four-wheeler parking</p>
+                </div>
+                <div class="section-content">
+                    <div class="vehicle-selector">
+                        <label class="vehicle-option">
+                            <input type="radio" name="vehicleType" value="two-wheeler" checked>
+                            <div class="vehicle-card">
+                                <div class="vehicle-icon">🏍️</div>
+                                <h3>Two Wheeler</h3>
+                                <p>Motorcycles, Scooters, Bikes</p>
+                            </div>
+                        </label>
+                        <label class="vehicle-option">
+                            <input type="radio" name="vehicleType" value="four-wheeler">
+                            <div class="vehicle-card">
+                                <div class="vehicle-icon">🚗</div>
+                                <h3>Four Wheeler</h3>
+                                <p>Cars, SUVs, Hatchbacks</p>           
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Section -->
+            <div class="section" id="booking-section">
+                <div class="section-header">
+                    <h2>📅 Book Your Parking Spot</h2>
+                    <p>Reserve your parking space in advance</p>
+                </div>
+                <div class="section-content">
+                    <form class="booking-form" id="bookingForm">
+                        <div class="form-group">
+                            <label for="location">Parking Location:</label>
+                            <select id="location" required>
+                                <option value="">Select a location</option>
+                                <option value="downtown-plaza">Hampankatte - ₹10/hour</option>
+                                <option value="mall-parking">City Center - ₹20/hour</option>
+                                <option value="airport-lot">Airport Long-term - ₹50/day</option>
+                                <option value="stadium-parking">Stadium Parking - ₹30/event</option>
+                            </select>
+                            <small style="color: #666; display: block; margin-top: 0.3rem;">💡 Prices will be calculated based on your selection</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Date:</label>
+                            <input type="date" id="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="time">Start Time:</label>
+                            <input type="time" id="time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="duration">Duration (hours):</label>
+                            <select id="duration" required>
+                                <option value="">Select duration</option>
+                                <option value="1">1 hour</option>
+                                <option value="2">2 hours</option>
+                                <option value="4">4 hours</option>
+                                <option value="8">8 hours (full day)</option>
+                                <option value="24">24 hours</option>
+                            </select>
+                            <small style="color: #666; display: block; margin-top: 0.3rem;">⏰ Longer durations may qualify for discounts</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="vehicle">Vehicle License Plate:</label>
+                            <input type="text" id="vehicle" placeholder="Enter license plate" required>
+                        </div>
+                        <div class="price-display">
+                            <div class="price" id="totalPrice">₹0</div>
+                            <p>Total Cost</p>
+                            <small style="color: #666;">Select location and duration to see pricing</small>
+                        </div>
+                        <button type="submit" class="submit-btn">Reserve Parking Spot</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Payment Section -->
+            <div class="section" id="payment-section">
+                <div class="section-header">
+                    <h2>💳 Secure Payment</h2>
+                    <p>Complete your parking reservation payment</p>
+                </div>
+                <div class="section-content">
+                    <div class="payment-methods">
+                        <h3 style="margin-bottom: 1.5rem; text-align: center; color: #333;">Choose Payment Method</h3>
+                        <div class="payment-tabs">
+                            <button class="tab-btn active" onclick="showPaymentMethod(event, 'upi')">
+                                <span class="tab-icon">📱</span>
+                                UPI Payment
+                            </button>
+                            <button class="tab-btn" onclick="showPaymentMethod(event, 'card')">
+                                <span class="tab-icon">💳</span>
+                                Card Payment
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- UPI Payment Form -->
+                    <div id="upiPayment" class="payment-form">
+                        <div class="upi-options">
+                            <h4 style="margin-bottom: 1rem; color: #333;">Select UPI Option</h4>
+                            <div class="upi-buttons">
+                                <button type="button" class="upi-btn" onclick="selectUPI(event, 'gpay')">
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzQyODVGNCIvPgo8cGF0aCBkPSJNMTIgMTZIMjhWMjRIMTJWMTZaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" alt="Google Pay" style="width: 24px; height: 24px;">
+                                    Google Pay
+                                </button>
+                                <button type="button" class="upi-btn" onclick="selectUPI(event, 'phonepe')">
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzVGMjU5RiIvPgo8cGF0aCBkPSJNMTIgMTZIMjhWMjRIMTJWMTZaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" alt="PhonePe" style="width: 24px; height: 24px;">
+                                    PhonePe
+                                </button>
+                                <button type="button" class="upi-btn" onclick="selectUPI(event, 'paytm')">
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzAwQkNENCIvPgo8cGF0aCBkPSJNMTIgMTZIMjhWMjRIMTJWMTZaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" alt="Paytm" style="width: 24px; height: 24px;">
+                                    Paytm
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <form id="upiForm">
+                            <div class="form-group">
+                                <label for="upiId">UPI ID:</label>
+                                <input type="text" id="upiId" placeholder="yourname@upi" required>
+                                <small style="color: #666;">Enter your UPI ID (e.g., 9876543210@paytm)</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="upiAmount">Amount:</label>
+                                <input type="text" id="upiAmount" readonly style="background: #f0f0f0;">
+                            </div>
+                            <div class="qr-section" id="qrSection" style="display: none;">
+                                <h4 style="text-align: center; margin-bottom: 1rem;">Scan QR Code to Pay</h4>
+                                <div class="qr-code">
+                                    <span style="font-size: 3rem;">📱</span>
+                                </div>
+                                <p style="text-align: center; color: #666;">Open your UPI app and scan this QR code</p>
+                            </div>
+                            <button type="submit" class="submit-btn">Pay with UPI</button>
+                        </form>
+                    </div>
+
+                    <!-- Card Payment Form -->
+                    <div id="cardPayment" class="payment-form" style="display: none;">
+                        <div class="card-types">
+                            <h4 style="margin-bottom: 1rem; color: #333;">Select Card Type</h4>
+                            <div class="card-type-buttons">
+                                <label class="card-type-option">
+                                    <input type="radio" name="cardType" value="debit" checked>
+                                    <span class="card-type-btn">
+                                        💳 Debit Card
+                                    </span>
+                                </label>
+                                <label class="card-type-option">
+                                    <input type="radio" name="cardType" value="credit">
+                                    <span class="card-type-btn">
+                                        💎 Credit Card
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <form id="cardForm">
+                            <div class="form-group">
+                                <label for="cardName">Cardholder Name:</label>
+                                <input type="text" id="cardName" placeholder="John Doe" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number:</label>
+                                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expiry">Expiry Date:</label>
+                                    <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV:</label>
+                                    <input type="text" id="cvv" placeholder="123" maxlength="3" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cardAmount">Amount:</label>
+                                <input type="text" id="cardAmount" readonly style="background: #f0f0f0;">
+                            </div>
+                            <button type="submit" class="submit-btn">Pay with Card</button>
+                        </form>
+                    </div>
+
+                    <form class="payment-form" style="margin-top: 1rem; background: #fff; border: 2px solid #e3f2fd; padding: 1rem; border-radius: 10px;">
+                        <div class="form-group">
+                            <label for="email">Email for Receipt:</label>
+                            <input type="email" id="email" placeholder="john@example.com" required>
+                        </div>
+                    </form>
+                    
+                    <!-- Final Submit Section -->
+                    <div class="final-submit-section">
+                        <h3 style="margin-bottom: 1rem; font-size: 1.5rem;">🎯 Complete Your Booking</h3>
+                        <p style="margin-bottom: 2rem; opacity: 0.9;">Review all details and complete your parking reservation</p>
+                        <button type="button" class="final-submit-btn" onclick="completeBooking()">
+                            🚀 Complete Booking
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Page -->
+    <div class="success-page" id="successPage">
+        <div class="success-container">
+            <div class="success-card">
+                <div class="success-icon">✅</div>
+                <h1 class="success-title">Booking Confirmed!</h1>
+                <p class="success-message">
+                    Thank you! Your parking has been booked successfully.
+                    You will receive a confirmation email shortly.
+                </p>
+                
+                <div class="booking-details" id="bookingDetails">
+                    <h3 style="text-align: center; margin-bottom: 1.5rem; font-size: 1.3rem;">📋 Booking Details</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">📍 Location:</span>
+                        <span class="detail-value" id="confirmedLocation">--</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">📅 Date:</span>
+                        <span class="detail-value" id="confirmedDate">--</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">⏰ Time:</span>
+                        <span class="detail-value" id="confirmedTime">--</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">⏱️ Duration:</span>
+                        <span class="detail-value" id="confirmedDuration">--</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">🚗 Vehicle:</span>
+                        <span class="detail-value" id="confirmedVehicle">--</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">💰 Total Paid:</span>
+                        <span class="detail-value" id="confirmedAmount">--</span>
+                    </div>
+                </div>
+
+                <div class="success-actions">
+                    <button class="action-btn" onclick="downloadReceipt()">
+                        📄 Download Receipt
+                    </button>
+                    <button class="action-btn secondary" onclick="newBooking()">
+                        🔄 Book Another Spot
+                    </button>
+                    <a href="tel:+919876543210" class="action-btn" style="text-decoration: none;">
+                        📞 Call Support
+                    </a>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 10px; text-align: center;">
+                    <p style="color: #666; font-size: 0.9rem;">
+                        🎉 <strong>Pro Tip:</strong> Save this confirmation for easy parking access!
+                        <br>📧 Check your email for detailed directions and QR code.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 style="text-align: center; color: #2ecc71; margin-bottom: 1rem;">✅ Success!</h2>
+            <p style="text-align: center; font-size: 1.1rem;" id="successMessage"></p>
+        </div>
+    </div>
+
+    <!-- Javascript -->
+    <script src="techPark.js"></script>
+
+    <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABumGpGQNzFzFXhF4oiallI4i-us-EuoE&callback=initMap"></script> -->
+    <!-- OpenStreetMap -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<div id="map" style="height: 300px; border-radius: 10px;"></div>
+
+</body>
+</html>
